@@ -1,0 +1,12 @@
+version: '3.9'
+services:
+  web:
+    build: ./Frontend/frontend/
+    ports:
+      - "3000:80"
+    links:
+      - "backend"
+  backend:
+    build: ./Backend
+    ports:
+      - "3001:8081"

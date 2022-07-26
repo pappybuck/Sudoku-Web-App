@@ -8,7 +8,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <Album path='http://backend-api:8080' />
+        <Album path='http://backend:8081/' />
       </header>
     </div>
   );
