@@ -12,6 +12,6 @@ COPY server.go ./
 
 RUN go build -o .
 
-EXPOSE 8080
+EXPOSE 8081
 
 ENTRYPOINT [ "./Backend" ]
