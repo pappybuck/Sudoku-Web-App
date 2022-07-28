@@ -8,8 +8,6 @@ RUN npm install --omit=dev && npm run build
 
 FROM nginx:1.23.0-alpine
 
-#COPY ./nginx.conf /etc/nginx/
-
 WORKDIR /usr/share/nginx/html
 
 RUN rm -rf ./*
