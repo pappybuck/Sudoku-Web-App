@@ -28,12 +28,12 @@ func main() {
 }
 
 func getCurrent(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, message)
+	c.JSON(http.StatusOK, message)
 }
 
 func getPing(c *gin.Context) {
 	message.Ping++
-	c.IndentedJSON(http.StatusOK, message)
+	c.JSON(http.StatusOK, message)
 }
 
 func postPong(c *gin.Context) {
@@ -42,5 +42,5 @@ func postPong(c *gin.Context) {
 		return
 	}
 	message.Pong = received.Pong
-	c.IndentedJSON(http.StatusOK, message)
+	c.JSON(http.StatusOK, message)
 }

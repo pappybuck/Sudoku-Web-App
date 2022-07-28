@@ -1,6 +1,9 @@
 package main
 
 import (
+	"encoding/json"
+	"io/ioutil"
+	"log"
 	"net/http"
 
 	"github.com/gin-contrib/cors"
@@ -15,6 +18,10 @@ type album struct {
 	Price  float64 `json:"price"`
 }
 
+type py struct {
+	Test string `json:"Test"`
+}
+
 // albums slice to seed record album data.
 var albums = []album{
 	{ID: "1", Title: "Blue Train", Artist: "John Coltrane", Price: 56.99},
@@ -25,20 +32,34 @@ var albums = []album{
 func main() {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
-	// config := cors.DefaultConfig()
-	// config.AllowOrigins = []string{"http://localhost:3000"}
-	// router.Use(cors.New(config))
 	router.Use(cors.Default())
 	router.GET("/", getAlbums)
-	// router.GET("/albums/:id", getAlbumByID)
-	// router.POST("/albums", postAlbums)
-
+	router.GET("/python", getPython)
 	router.Run(":8081")
+}
+
+func getPython(c *gin.Context) {
+	res, err := http.Get("http://pythonsolver:8000")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	// defer res.Body.Close()
+
+	// bodyBytes, err := io.ReadAll(res.Body)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	// c.IndentedJSON(http.StatusOK, string(bodyBytes))
+	var received py
+	bodyBytes, _ := ioutil.ReadAll(res.Body)
+	json.Unmarshal(bodyBytes, &received)
+	c.JSON(http.StatusOK, received)
 }
 
 // getAlbums responds with the list of all albums as JSON.
 func getAlbums(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, albums)
+	c.JSON(http.StatusOK, albums)
 }
 
 // // postAlbums adds an album from JSON received in the request body.

@@ -8,3 +8,5 @@ services:
     build: ./Backend
     ports:
       - "8081:8081"
+  pythonsolver:
+    build: ./Backend/pythonSolver
