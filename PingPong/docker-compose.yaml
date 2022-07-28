@@ -1,0 +1,10 @@
+version: '3.9'
+services:
+  pong:
+    build: ./Pong
+    depends_on:
+     - "ping"
+  ping:
+    build: ./Ping
+    ports:
+      - 80:80
