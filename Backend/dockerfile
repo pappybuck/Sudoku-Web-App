@@ -1,6 +1,10 @@
-FROM golang:1.18-alpine
+FROM golang:1.18-alpine as Builder
 
 WORKDIR /app
+
+RUN apk add build-base
+
+RUN CGO_ENABLED=1 GOOS=linux
 
 COPY go.mod ./
 
@@ -11,6 +15,12 @@ RUN go mod download
 COPY server.go ./
 
 RUN go build -o .
+
+FROM alpine:3.6
+
+WORKDIR /app
+
+COPY --from=Builder /app/Backend .
 
 EXPOSE 8081
 

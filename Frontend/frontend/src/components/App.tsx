@@ -1,15 +1,12 @@
 import React from 'react';
 import logo from '../logo.svg';
-import '../App.css';
-import Album from './Album';
-import path from 'path';
+//import '../App.css';
+import Board from './Board';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <Album path='http://localhost:8081/' />
-      </header>
+      <Board />
     </div>
   );
 }

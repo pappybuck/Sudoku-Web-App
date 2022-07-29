@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"database/sql"
 	"encoding/json"
 	"io/ioutil"
 	"log"
@@ -8,87 +10,49 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	_ "github.com/mattn/go-sqlite3"
 )
 
-// album represents data about a record album.
-type album struct {
-	ID     string  `json:"id"`
-	Title  string  `json:"title"`
-	Artist string  `json:"artist"`
-	Price  float64 `json:"price"`
+type sudoku struct {
+	Quiz string `json:"quiz"`
+	Solution string `json:"solution"`
 }
 
-type py struct {
-	Test string `json:"Test"`
-}
-
-// albums slice to seed record album data.
-var albums = []album{
-	{ID: "1", Title: "Blue Train", Artist: "John Coltrane", Price: 56.99},
-	{ID: "2", Title: "Jeru", Artist: "Gerry Mulligan", Price: 17.99},
-	{ID: "3", Title: "Sarah Vaughan and Clifford Brown", Artist: "Sarah Vaughan", Price: 39.99},
-}
+var db *sql.DB
 
 func main() {
+	connection, err := sql.Open("sqlite3", "./sudoku.db")
+	if err != nil {
+		log.Fatal(err)
+	}
+	db = connection
+	defer connection.Close()
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	router.Use(cors.Default())
-	router.GET("/", getAlbums)
-	router.GET("/python", getPython)
+	router.GET("/all", getAll)
 	router.Run(":8081")
 }
 
-func getPython(c *gin.Context) {
-	res, err := http.Get("http://pythonsolver:8000")
+func getAll(c *gin.Context) {
+	row, err := db.Query("SELECT * FROM sudoku ORDER BY RANDOM() LIMIT 1")
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatal(err)
 	}
-	// defer res.Body.Close()
-
-	// bodyBytes, err := io.ReadAll(res.Body)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// c.IndentedJSON(http.StatusOK, string(bodyBytes))
-	var received py
-	bodyBytes, _ := ioutil.ReadAll(res.Body)
-	json.Unmarshal(bodyBytes, &received)
-	c.JSON(http.StatusOK, received)
+	defer row.Close()
+	var sudoku sudoku
+	row.Next()
+	err = row.Scan(&sudoku.Quiz, &sudoku.Solution)
+	if err != nil {
+		log.Fatal(err)
+	}
+	bodyBytes, _ := json.Marshal(sudoku)
+	res, err := http.Post("http://pythonsolver:8000", "application/json", bytes.NewBuffer(bodyBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer res.Body.Close()
+	bodyBytes, _ = ioutil.ReadAll(res.Body)
+	json.Unmarshal(bodyBytes, &sudoku)
+	c.JSON(http.StatusOK, sudoku)
 }
-
-// getAlbums responds with the list of all albums as JSON.
-func getAlbums(c *gin.Context) {
-	c.JSON(http.StatusOK, albums)
-}
-
-// // postAlbums adds an album from JSON received in the request body.
-// func postAlbums(c *gin.Context) {
-// 	var newAlbum album
-
-// 	// Call BindJSON to bind the received JSON to
-// 	// newAlbum.
-// 	if err := c.BindJSON(&newAlbum); err != nil {
-// 		return
-// 	}
-
-// 	// Add the new album to the slice.
-// 	albums = append(albums, newAlbum)
-// 	c.IndentedJSON(http.StatusCreated, newAlbum)
-// }
-
-// // getAlbumByID locates the album whose ID value matches the id
-// // parameter sent by the client, then returns that album as a response.
-// func getAlbumByID(c *gin.Context) {
-// 	id := c.Param("id")
-
-// 	// Loop through the list of albums, looking for
-// 	// an album whose ID value matches the parameter.
-// 	for _, a := range albums {
-// 		if a.ID == id {
-// 			c.IndentedJSON(http.StatusOK, a)
-// 			return
-// 		}
-// 	}
-// 	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
-// }
