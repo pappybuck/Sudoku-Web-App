@@ -9,9 +9,10 @@ services:
     ports:
       - "8081:8081"
     volumes:
-      - ./Backend/sudoku.db:/app/sudoku.db
-  pythonsolver:
-    build: ./Backend/pythonSolver
+      #- ./Backend/sudoku.db:/app/sudoku.db
+      - ./Backend/sample.db:/app/sudoku.db
+  # pythonsolver:
+  #   build: ./Backend/pythonSolver
   Elasticsearch:
     image: elasticsearch:7.16.2
     container_name: elasticsearch
