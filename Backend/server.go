@@ -1,10 +1,7 @@
 package main
 
 import (
-	"bytes"
 	"database/sql"
-	"encoding/json"
-	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -16,6 +13,11 @@ import (
 type sudoku struct {
 	Quiz string `json:"quiz"`
 	Solution string `json:"solution"`
+}
+
+type quiz struct {
+	ID int `json:"id"`
+	Quiz string `json:"quiz"`
 }
 
 var db *sql.DB
@@ -30,29 +32,30 @@ func main() {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	router.Use(cors.Default())
-	router.GET("/all", getAll)
+	router.GET("/getRandom", getQuiz)
+	//router.POST("/solve", solve)
 	router.Run(":8081")
 }
 
-func getAll(c *gin.Context) {
-	row, err := db.Query("SELECT * FROM sudoku ORDER BY RANDOM() LIMIT 1")
+func getQuiz(c *gin.Context) {
+	row, err := db.Query("SELECT ROWID, quizzes FROM sudoku ORDER BY RANDOM() LIMIT 1")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer row.Close()
-	var sudoku sudoku
+	var quiz quiz
 	row.Next()
-	err = row.Scan(&sudoku.Quiz, &sudoku.Solution)
+	err = row.Scan(&quiz.ID, &quiz.Quiz)
 	if err != nil {
 		log.Fatal(err)
 	}
-	bodyBytes, _ := json.Marshal(sudoku)
-	res, err := http.Post("http://pythonsolver:8000", "application/json", bytes.NewBuffer(bodyBytes))
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer res.Body.Close()
-	bodyBytes, _ = ioutil.ReadAll(res.Body)
-	json.Unmarshal(bodyBytes, &sudoku)
-	c.JSON(http.StatusOK, sudoku)
+	c.JSON(http.StatusOK, quiz)
+	// res, err := http.Post("http://pythonsolver:8000", "application/json", bytes.NewBuffer(bodyBytes))
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// defer res.Body.Close()
+	// bodyBytes, _ = ioutil.ReadAll(res.Body)
+	// json.Unmarshal(bodyBytes, &sudoku)
+	// c.JSON(http.StatusOK, sudoku)
 }
