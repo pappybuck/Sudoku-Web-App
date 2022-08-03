@@ -22,6 +22,8 @@ WORKDIR /app
 
 COPY --from=Builder /app/Backend .
 
+#COPY ./sample.db /app/sudoku.db
+
 EXPOSE 8081
 
 ENTRYPOINT [ "./Backend" ]

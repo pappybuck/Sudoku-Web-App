@@ -17,25 +17,16 @@ app = FastAPI()
 @app.post("/")
 def sudoku(request: Sudoku):
     quiz = []
-    solution = []
     for row in range(0, 9):
         quiz.append([])
-        solution.append([])
         for col in range(0, 9):
             quiz[row].append(int(request.quiz[row * 9 + col]))
-            solution[row].append(int(request.solution[row * 9 + col]))
-    quiz = solve(quiz)
-    quiz_str = ""
-    for row in quiz:
+    solution = solve(quiz)
+    solution_str = ""
+    for row in solution:
         for col in row:
-            quiz_str += str(col)
-    if quiz != solution:        
-        return {
-            "Quiz": request.quiz,
-            "Solution": "Solution found {}, Expected answer {}".format(quiz, solution)
-        }
-    else:
-        return {
-            "Quiz": request.quiz,
-            "Solution": "{}".format(quiz_str)
-        }
+            solution_str += str(col)
+    return {
+        "Quiz": request.quiz,
+        "Solution": "{}".format(solution_str)
+    }

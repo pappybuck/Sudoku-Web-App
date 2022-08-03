@@ -13,7 +13,7 @@ export default function Board() {
             fetch("http://localhost:8081/getRandom").then(res => res.json()).then(data => {
                 setQuizNumber(data.id);
                 for (let i = 0; i < data.quiz.length; i++) {
-                    setBoard(board => [...board, data.quiz[i]]);
+                    setBoard(board => [...board, +data.quiz[i]]);
                 }
             });
         }
@@ -41,6 +41,39 @@ export default function Board() {
                     </li>
                 ))}
             </ul>
+            <button onClick={() => {
+                console.log(board);
+                if (board.every(cell => +cell !== 0)) {
+                    fetch("http://localhost:8081/check", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            quiz: board.join(""),
+                            solution: "Calculating..."
+                        })
+                    }).then(res => res.json()).then(data => {
+                        alert(data.solution);
+                    }
+                    );
+                } else {
+                    fetch("http://localhost:8081/solve", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            quiz: board.join(""),
+                            solution: "Calculating..."
+                        })
+                    }).then(res => res.json()).then(data => {
+                        alert(data.solution);
+                    }
+                    );
+                }
+            }
+            }>Solve</button>
         </div>
     );
 }

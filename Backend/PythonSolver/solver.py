@@ -24,15 +24,15 @@ def rec_solve(board, x, y, choices):
         if new_y == None or new_x == None:
             return board
         answer = rec_solve(board, new_x, new_y, successors(board, new_x, new_y))
-        if answer is not None:
+        if answer[new_y][new_x] is not 0:
             return answer
     board[y][x] = 0
-    return None
+    return board
 
 def solve(board):
     y , x = find_next(board)
     if (y == None or x == None):
-        return None
+        return board
     return rec_solve(board, x, y, successors(board, x, y))
      
 def find_next(board):

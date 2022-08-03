@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 export default function Cell(props: {id: number, value: number, onUpdate: (id: number, value: number) => Number[]}) {
     const [valid , setValid] = React.useState<boolean>(true);
@@ -43,10 +43,10 @@ export default function Cell(props: {id: number, value: number, onUpdate: (id: n
                     b_count++;
                 }
             }
-            console.log(x_count, y_count, b_count);
             setValid(x_count <= 1 && y_count <= 1 && b_count <= 1);
         } else {
             setValue(0);
+            props.onUpdate(props.id, 0);
             setValid(true);
         }
     }
@@ -54,6 +54,6 @@ export default function Cell(props: {id: number, value: number, onUpdate: (id: n
         return <input className="given" type="text" value={value} readOnly/>;
     }
     return (
-        <input className={valid ? 'background-white' : 'background-red'} onChange={onChange} type="text" value={value} contentEditable={true} />
+        <input className={valid ? 'background-white' : 'background-red'} onChange={onChange} type="text" value={value} contentEditable={true}/>
     )
 }
