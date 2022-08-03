@@ -1,0 +1,7 @@
+Deployment:
+  Python:
+    Name: python-solver
+    matchLabels: python-solver
+    image: pappybuck/pythonsolver-local
+    imagePullPolicy: Never
+    port: 8000
