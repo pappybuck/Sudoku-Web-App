@@ -14,12 +14,12 @@ import (
 )
 
 type sudoku struct {
-	Quiz string `json:"quiz"`
+	Quiz     string `json:"quiz"`
 	Solution string `json:"solution"`
 }
 
 type quiz struct {
-	ID int `json:"id"`
+	ID   int    `json:"id"`
 	Quiz string `json:"quiz"`
 }
 
@@ -81,7 +81,7 @@ func postSolve(c *gin.Context) {
 		}
 	}
 	for i := 0; i < 9; i += 3 {
-		for j := 0; j < 9; j+=3 {
+		for j := 0; j < 9; j += 3 {
 			var dict = make(map[int]int)
 			for k := 0; k < 9; k++ {
 				dict[quiz[i+k/3][j+k%3]]++
@@ -109,7 +109,7 @@ func postSolve(c *gin.Context) {
 	c.JSON(http.StatusOK, sudoku)
 }
 
-func postCheck(c *gin.Context){
+func postCheck(c *gin.Context) {
 	var sudoku sudoku
 	c.BindJSON(&sudoku)
 	var quiz [][]int = make([][]int, 9)
@@ -134,7 +134,7 @@ func postCheck(c *gin.Context){
 		}
 	}
 	for i := 0; i < 9; i += 3 {
-		for j := 0; j < 9; j+=3 {
+		for j := 0; j < 9; j += 3 {
 			var dict = make(map[int]int)
 			for k := 0; k < 9; k++ {
 				dict[quiz[i+k/3][j+k%3]]++
