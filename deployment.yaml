@@ -1,0 +1,23 @@
+{{- range $index, $deployment := .Values.Deployments }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .deployment.Name}}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .deployment.matchLabels | nindent 6}}
+  replicas: {{ .deployment.Replicas | nindent 2}}
+  template:
+    metadata:
+      labels:
+        app: {{ .deployment.matchLabels | nindent 8}}
+    spec:
+      containers:
+        - name: {{ .deployment.Name | nindent 8}}
+          image: {{.deployment.image | nindent 10}}
+          imagePullPolicy: {{.deployment.imagePullPolicy | nindent 10}}
+          ports:
+            - name: http
+              containerPort: {{.deployment.port | nindent 14}}
+{{- end }}
